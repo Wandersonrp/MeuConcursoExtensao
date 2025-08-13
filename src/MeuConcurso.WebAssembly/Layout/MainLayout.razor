@@ -35,6 +35,6 @@
 
     public void Dispose()
     {
-        LayoutStateService.LayoutChanged += UpdateLayout;
+        LayoutStateService.LayoutChanged -= UpdateLayout;
     }
 }
