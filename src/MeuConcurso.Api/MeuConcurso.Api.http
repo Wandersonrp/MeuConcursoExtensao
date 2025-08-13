@@ -1,0 +1,6 @@
+@MeuConcurso.Api_HostAddress = http://localhost:5133
+
+GET {{MeuConcurso.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

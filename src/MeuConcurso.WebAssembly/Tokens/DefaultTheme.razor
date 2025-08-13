@@ -1,0 +1,63 @@
+﻿<MudThemeProvider @ref="_mudThemeProvider" @bind-IsDarkMode="_isDarkMode" Theme="_theme"/>
+
+@code {
+    private bool _isDarkMode;
+    private MudThemeProvider _mudThemeProvider;
+
+    private MudTheme _theme = new()
+    {
+        PaletteLight = new PaletteLight
+        {
+            Primary = "#2196F3", // BLUE500
+            PrimaryDarken = "#1976D2", // BLUE700            
+            Secondary = "#00BCD4", // CYAN500   
+            SecondaryDarken = "#0097A7", // CYAN700
+            Background = "#F5F5F5", // GREY100
+            Surface = "#FFFFFF", // WHITE            
+            PrimaryContrastText = "#FFFFFF",
+            SecondaryContrastText = "#FFFFFF",
+            TextPrimary = "#212121", // GRAY900
+            Error = "#D32F2F", // RED700
+            Success = "#4CAF50", // GREEN500
+            Warning = "#FFC107" // AMBER500
+        },
+        PaletteDark = new PaletteDark
+        {
+            Primary = "#90CAF9", // BLUE200
+            PrimaryLighten = "#64B5F6", // BLUE300
+            Secondary = "#80DEEA", // CYAN200
+            SecondaryLighten = "#4DD0E1", // CYAN300
+            Background = "#121212",
+            Surface = "#1E1E1E", // DARK GRAY
+            PrimaryContrastText = "#000000", // BLACK
+            SecondaryContrastText = "#000000",
+            TextPrimary = "#FFFFFF", // WHITE
+            Error = "#EF9A9A", // RED200
+            Success = "#A5D6A7", // GREEN200
+            Warning = "#FFEB3B" // YELLOW500
+        },
+        Typography = new Typography
+        {
+            Default = new DefaultTypography()
+            {
+                FontFamily = new[] { "Roboto", "sans-serif" }
+            }
+        }
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await _mudThemeProvider.WatchSystemDarkModeAsync(OnSystemDarkModeChanged);
+            StateHasChanged();
+        }
+    }
+
+    private Task OnSystemDarkModeChanged(bool newValue)
+    {
+        _isDarkMode = newValue;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+}

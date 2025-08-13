@@ -1,0 +1,13 @@
+﻿.btn-active-light {
+    border: 1px solid #F5F5F5;
+    background: #2196F3;
+}
+
+.btn-active-dark {
+    border: 1px solid #F5F5F5;
+    background: #2196F3;
+}
+
+.border-background {
+    border: 1px solid var(--mud-palette-background);
+}

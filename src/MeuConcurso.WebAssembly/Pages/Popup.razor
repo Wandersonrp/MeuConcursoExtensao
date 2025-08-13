@@ -1,0 +1,36 @@
+﻿@page "/popup.html"
+
+@inherits BasePage
+
+@inject LayoutStateService LayoutStateService
+
+<div style="height: 100%; width: 100%;" class="d-flex flex-column align-center">
+    <MudStack AlignItems="AlignItems.Center" Row Justify="Justify.SpaceAround" Style="width: 100%;">
+        <MudButton Class="@($"rounded-xl px-3 py-1 {(_activeButton == "Todos" ? "border-none" : "border-background")}")" 
+            Color="@(_activeButton == "Todos" ? Color.Primary : Color.Transparent)" 
+            Variant="@(_activeButton == "Todos" ? Variant.Filled : Variant.Outlined)" 
+            OnClick="@(() => SetActiveButton("Todos"))">Todos</MudButton>
+        <MudButton Class="@($"rounded-xl px-3 py-1 {(_activeButton == "Abertos" ? "border-none" : "border-background")}")" 
+            Color="@(_activeButton == "Abertos" ? Color.Primary : Color.Transparent)" 
+            Variant="@(_activeButton == "Abertos" ? Variant.Filled : Variant.Outlined)" 
+            OnClick="@(() => SetActiveButton("Abertos"))">Abertos</MudButton>
+        <MudButton Class="@($"rounded-xl px-3 py-1 {(_activeButton == "Previstos" ? "border-none" : "border-background")}")" 
+            Color="@(_activeButton == "Previstos" ? Color.Primary : Color.Transparent)" 
+            Variant="@(_activeButton == "Previstos" ? Variant.Filled : Variant.Outlined)" 
+            OnClick="@(() => SetActiveButton("Previstos"))">Previstos</MudButton>
+    </MudStack>
+</div>
+ 
+@code {
+    private string _activeButton = "Todos";
+
+    protected override void OnInitialized()
+    {
+        LayoutStateService.Setup(LayoutType.Default, pageName: "Meus Concursos");
+    }
+
+    private void SetActiveButton(string buttonText)
+    {
+        _activeButton = buttonText;
+    }
+}

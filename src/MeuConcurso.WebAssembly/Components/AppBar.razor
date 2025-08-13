@@ -1,0 +1,45 @@
+﻿@inherits ComponentBaseWithState
+
+<MudAppBar Elevation="0" Color="Color.Primary">
+    @if (_layoutTypeState.Value == LayoutType.Default)
+    {
+        <MudStack AlignItems="AlignItems.Center" Row>
+            <MudText Style="font-size: 1rem; font-weight: 700;">@_pageNameState.Value</MudText>            
+        </MudStack>
+    }
+</MudAppBar>
+
+@code {
+
+    #region Parameters
+    private readonly ParameterState<LayoutType> _layoutTypeState;
+
+    [Parameter]
+    public LayoutType LayoutType { get; set; }
+
+    [Parameter]
+    public EventCallback<LayoutType> LayoutTypeChanged { get; set; }
+
+
+    private readonly ParameterState<string> _pageNameState;
+
+    [Parameter]
+    public string PageName { get; set; }
+
+    [Parameter]
+    public EventCallback<string> PageNameChanged { get; set; }
+    #endregion
+
+    public AppBar()
+    {
+        using var scope = base.CreateRegisterScope();
+
+        _layoutTypeState = scope.RegisterParameter<LayoutType>(nameof(LayoutType))
+            .WithParameter(() => LayoutType)
+            .WithEventCallback(() => LayoutTypeChanged);
+
+        _pageNameState = scope.RegisterParameter<string>(nameof(PageName))
+            .WithParameter(() => PageName)
+            .WithEventCallback(() => PageNameChanged);
+    }
+}
