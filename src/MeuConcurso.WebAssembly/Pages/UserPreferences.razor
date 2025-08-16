@@ -1,0 +1,188 @@
+﻿@page "/preferences.html"
+
+@attribute [StreamRendering]
+
+@inherits BasePage
+
+@inject LayoutStateService LayoutStateService
+@inject IIbgeService IbgeService
+@inject ILocalStorageService LocalStorageService
+
+<div style="height: 100%; width: 100%;" class="d-flex flex-column align-start">
+    <MudCard>
+        <MudForm>
+            <MudCardContent Class="d-flex flex-column gap-3">
+                <MudStack Row Spacing="2" AlignItems="AlignItems.Center" Justify="Justify.FlexStart">
+                    <MudIcon Icon="@Icons.Material.Filled.Place" />
+                    <MudText Style="font-size: 0.875rem; font-weight: 600;">Locais de interesse</MudText>
+                </MudStack>
+                <MudSelect Class="mt-2" T="ResponseStateJson" Label="Estado" FullWidth Variant="Variant.Text" ValueChanged="OnStateChanged" Placeholder="Selecione um Estado">
+                    @foreach (var state in _states)
+                    {
+                        <MudSelectItem @key="state.Id" Value="@state">@state.Nome</MudSelectItem>
+                    }
+                </MudSelect>
+
+                <MudAutocomplete T="string"
+                                 @ref="_autocompleteRef"
+                                 ValueChanged="OnValueChanged"
+                                 Label="Pesquise um município"
+                                 SearchFunc="Search"
+                                 Variant="Variant.Text"
+                                 ShowProgressIndicator="true"
+                                 FullWidth
+                                 SelectValueOnTab
+                                 ReadOnly="@_autoCompleteReadOnly"
+                                 Adornment="Adornment.End"
+                                 AdornmentIcon="@Icons.Material.Filled.Search"
+                                 AdornmentColor="Color.Primary"
+                                 MaxItems="20"
+                                 OnBlur="HandleAutocompleteOnBlur"
+                                 HelperText="Digite o nome da cidade e pressione TAB para selecionar"
+                                 ProgressIndicatorColor="Color.Primary" />
+
+                <MudChipSet T="string" AllClosable OnClose="ClosedCities">
+                    @foreach (var chip in _citiesChips.Keys)
+                    {
+                        <MudChip Text="@chip" Color="Color.Primary" />
+                    }
+                </MudChipSet>
+
+                <MudStack class="mt-2" Row Spacing="2" AlignItems="AlignItems.Center" Justify="Justify.FlexStart">
+                    <MudIcon Icon="@Icons.Material.Filled.AccountBalance" />
+                    <MudText Style="font-size: 0.875rem; font-weight: 600;">Órgãos de interesse</MudText>
+                </MudStack>
+
+                <MudTextField T="string"
+                              @ref="_textFieldRef"
+                              Class="mt-2"
+                              FullWidth
+                              Placeholder="Ex.: Polícia Federal"
+                              Label="Órgão"
+                              HelperText="Digite o nome do órgão e pressione TAB para selecionar"
+                              OnBlur="HandleTextFieldOnBlur" />
+
+                <MudChipSet T="string" AllClosable OnClose="ClosedPublicAgencies">
+                    @foreach (var chip in _publicAgenciesChips)
+                    {
+                        <MudChip Text="@chip" Color="Color.Primary" />
+                    }
+                </MudChipSet>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" FullWidth Class="px-2 py-y">Salvar Preferências</MudButton>
+            </MudCardActions>
+        </MudForm>
+    </MudCard>    
+</div>
+
+@code {
+    private ResponseStateJson _selectedState;
+    private string _selectedCity = string.Empty;
+
+    private IList<ResponseStateJson> _states = [];
+    private IEnumerable<ResponseCityJson> _cities = [];
+    
+    private Dictionary<string, string> _citiesChips = new();
+    private HashSet<string> _publicAgenciesChips = new();
+
+    private MudAutocomplete<string> _autocompleteRef;
+    private MudTextField<string> _textFieldRef;
+
+    private bool _autoCompleteReadOnly = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        LayoutStateService.Setup(LayoutType.Default, pageName: "Preferências de Concursos");
+
+        await GetStatesAsync();
+    }
+
+    private async Task Submit()
+    {
+        // TODO: FAZER REQUISICAO PARA API                         
+    }
+
+    private async Task GetStatesAsync()
+    {
+        var value = await LocalStorageService.GetItemAsStringAsync("_states");
+
+        if (!string.IsNullOrEmpty(value))
+        {
+            Logger.LogDebug("Tinham estados no LocalStorage");
+
+            _states = JsonSerializer.Deserialize<List<ResponseStateJson>>(value) ?? [];
+
+            Logger.LogDebug("Quantidade de estados no LocalStorage: {Quantidade}", _states.Count);
+            return;
+        }
+
+        Logger.LogDebug("Não tinham estados no LocalStorage. Buscando da API do IBGE...");
+        _states = await IbgeService.GetStatesAsync();
+        Logger.LogDebug("Quantidade de estados retornados da API do IBGE: {Quantidade}", _states.Count);
+
+        await LocalStorageService.SetItemAsync("_states", _states);
+        Logger.LogDebug("Inseriu as {Quantidade} de estados no LocalStorage", _states.Count);
+    }
+
+    private async Task OnStateChanged(ResponseStateJson selectedState)
+    {
+        _selectedState = selectedState;
+        Logger.LogDebug("Id do estado selecionado: {Id}", selectedState.Id);
+        _selectedCity = string.Empty;
+        _cities = await GetCitiesAsync();
+        _autoCompleteReadOnly = false;
+    }
+
+    private async Task<IEnumerable<ResponseCityJson>> GetCitiesAsync()
+    {        
+        return await IbgeService.GetCitiesAsync(_selectedState.Id);        
+    }
+
+    private void OnValueChanged(string selectedCity)
+    {
+        Logger.LogDebug("Cidade do estado selecionado: {Cidade}", selectedCity);
+        _selectedCity = selectedCity;
+        StateHasChanged();
+    }
+
+    private async Task<IEnumerable<string>> Search(string value, CancellationToken token)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return _cities.Select(c => c.Nome);
+        }
+
+        return _cities.Where(c => c.Nome.StartsWith(value, StringComparison.InvariantCultureIgnoreCase)).Select(c => c.Nome);
+    }
+
+    private void HandleAutocompleteOnBlur(FocusEventArgs args)
+    {        
+        var currentText = _autocompleteRef?.Text;
+
+        if (!string.IsNullOrWhiteSpace(currentText) && !_citiesChips.Values.Contains(_selectedCity))
+        {            
+            _citiesChips.Add(currentText, _selectedState.Sigla);
+            _selectedCity = string.Empty;
+            _autocompleteRef.Text = string.Empty;
+            StateHasChanged();
+        }
+    }
+
+    private void HandleTextFieldOnBlur(FocusEventArgs args)
+    {
+        var currentText = _textFieldRef?.Text;
+
+        if (!string.IsNullOrWhiteSpace(currentText) && !_publicAgenciesChips.Contains(currentText))
+        {
+            Logger.LogDebug("Entrou na Validação do OnBlur. Autocomplete Text (direto): {AutocompleteText}", _textFieldRef?.Text);
+
+            _publicAgenciesChips.Add(currentText);            
+            _textFieldRef.Text = string.Empty;
+            StateHasChanged();
+        }
+    }
+
+    public void ClosedCities(MudChip<string> chip) => _citiesChips.Remove(chip.Text);
+    public void ClosedPublicAgencies(MudChip<string> chip) => _publicAgenciesChips.Remove(chip.Text);
+}

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeuConcurso.WebAssembly", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeuConcurso.Api", "src\MeuConcurso.Api\MeuConcurso.Api.csproj", "{CFFC154D-C69E-4AD5-9036-1C61645C7E0B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeuConcurso.Shared", "src\MeuConcurso.Shared\MeuConcurso.Shared.csproj", "{4B6F3523-D04C-42B6-8BCB-4869B22F45D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{CFFC154D-C69E-4AD5-9036-1C61645C7E0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFFC154D-C69E-4AD5-9036-1C61645C7E0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFFC154D-C69E-4AD5-9036-1C61645C7E0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B6F3523-D04C-42B6-8BCB-4869B22F45D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B6F3523-D04C-42B6-8BCB-4869B22F45D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B6F3523-D04C-42B6-8BCB-4869B22F45D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B6F3523-D04C-42B6-8BCB-4869B22F45D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +38,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{DD180C84-D3C5-4403-8679-BBBBDAAF2CF9} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{CFFC154D-C69E-4AD5-9036-1C61645C7E0B} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{4B6F3523-D04C-42B6-8BCB-4869B22F45D0} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B6EDF5C0-A180-4C80-BC1B-6FD646CB8A54}

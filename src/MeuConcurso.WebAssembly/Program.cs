@@ -1,5 +1,7 @@
 ﻿using Blazor.BrowserExtension;
+using Blazored.LocalStorage;
 using MeuConcurso.WebAssembly;
+using MeuConcurso.WebAssembly.Services.Ibge;
 using MeuConcurso.WebAssembly.Services.Layout;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -22,6 +24,14 @@ builder.UseBrowserExtension(browserExtension =>
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 builder.Services.AddScoped<LayoutStateService>();
+builder.Services.AddScoped<IIbgeService, IbgeService>();
+
+builder.Services.AddBlazoredLocalStorage();
+
+builder.Services.AddHttpClient(name: "Ibge", client =>
+{
+    client.BaseAddress = new Uri("https://servicodados.ibge.gov.br/api/v1/");
+});
 
 builder.Services.AddMudServices();
 

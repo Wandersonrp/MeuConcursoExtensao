@@ -17,7 +17,7 @@
         </MudMainContent>
     <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceAround" Style="width: 100%;">
         <MudIconButton Icon="@Icons.Material.Filled.Home" OnClick="@(() => NavigationManager.NavigateTo("popup.html"))"/>
-        <MudIconButton Icon="@Icons.Material.Filled.Settings" />
+        <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="@(() => NavigationManager.NavigateTo("preferences.html"))" />
         <MudIconButton Icon="@Icons.Material.Filled.Info" />
     </MudStack>
 </MudLayout>
